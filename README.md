@@ -2,7 +2,7 @@
 
 API REST para gerenciamento de tarefas desenvolvida com Java 21 e Spring Boot. O projeto foca em boas práticas de arquitetura, Clean Code, validações de dados e versionamento de banco de dados.
 
-## 🚀 Tecnologias e Ferramentas
+## Tecnologias e Ferramentas
 
 - **Java 21**
 - **Spring Boot 4.0.5**
@@ -15,7 +15,7 @@ API REST para gerenciamento de tarefas desenvolvida com Java 21 e Spring Boot. O
 - **Jakarta Bean Validation** (Validação de integridade de dados)
 - **Spring Boot Actuator** (Monitoramento da aplicação)
 
-## 📋 Status do Projeto
+## Status do Projeto
 
 O projeto está na fase inicial de estruturação.
 
@@ -29,7 +29,7 @@ O projeto está na fase inicial de estruturação.
 - [ ] Implementação de CRUD e regras de negócio (Services).
 - [ ] Tratamento global de exceções (`@RestControllerAdvice`).
 
-## 🛠️ Como executar o projeto localmente
+## Como executar o projeto localmente
 
 ### Pré-requisitos
 - [JDK 21](https://adoptium.net/) ou superior.
@@ -73,7 +73,7 @@ O projeto está na fase inicial de estruturação.
    Com a aplicação iniciada, a documentação interativa estará disponível no navegador em:
    [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
-## 🏗️ Arquitetura e Estrutura de Pastas
+## Arquitetura e Estrutura de Pastas
 
 O projeto utiliza o padrão de **Arquitetura em Camadas (Package by Layer)** para garantir a separação de responsabilidades:
 
