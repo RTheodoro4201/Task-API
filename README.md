@@ -15,20 +15,6 @@ API REST para gerenciamento de tarefas desenvolvida com Java 21 e Spring Boot. O
 - **Jakarta Bean Validation** (Validação de integridade de dados)
 - **Spring Boot Actuator** (Monitoramento da aplicação)
 
-## Status do Projeto
-
-O projeto está na fase inicial de estruturação.
-
-- [x] Configuração inicial (Spring Boot, dependências e plugins).
-- [x] Estrutura de pacotes (Arquitetura em camadas).
-- [x] Configuração do banco de dados MySQL via Docker.
-- [x] Criação da tabela de tarefas via Flyway (`V1__create_tables.sql`).
-- [x] Configuração da documentação Swagger OpenAPI.
-- [ ] Mapeamento da entidade principal (`Task`) e Enums.
-- [ ] Criação dos DTOs e validações.
-- [ ] Implementação de CRUD e regras de negócio (Services).
-- [ ] Tratamento global de exceções (`@RestControllerAdvice`).
-
 ## Como executar o projeto localmente
 
 ### Pré-requisitos
