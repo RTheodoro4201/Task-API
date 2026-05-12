@@ -1,0 +1,15 @@
+package io.github.rtheodoro4201.task_api.exception;
+
+import java.time.Instant;
+import java.util.List;
+
+public record APIError(
+        Instant timestamp,
+        Integer status,
+        String error,
+        String message,
+        String path,
+        List<FieldErrorDetail> fieldErrors) {
+    public record FieldErrorDetail(String field, String message) {
+    }
+}
