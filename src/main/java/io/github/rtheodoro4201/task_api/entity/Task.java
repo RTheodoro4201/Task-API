@@ -37,7 +37,7 @@ public class Task {
     @Column(nullable = false)
     private TaskPriority priority = TaskPriority.MEDIUM;
 
-    @Column(name = "due_date")
+    @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
     @CreationTimestamp
