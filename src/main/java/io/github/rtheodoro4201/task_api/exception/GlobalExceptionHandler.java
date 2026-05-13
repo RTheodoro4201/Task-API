@@ -28,7 +28,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler (TaskNotFoundException.class)
-    public ResponseEntity<APIError> handleTaskNotFoundException(@NonNull TaskNotFoundException ex) {
+    public ResponseEntity<APIError> handleTaskNotFoundException(TaskNotFoundException ex) {
         String path = request.getRequestURI();
 
         logger.warn("Tarefa não encontrada: {}", ex.getMessage());
@@ -45,7 +45,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);    }
 
     @ExceptionHandler (TaskAlreadyExistsException.class)
-    public ResponseEntity<APIError> handleTaskAlreadyExistsException(@NonNull TaskAlreadyExistsException ex) {
+    public ResponseEntity<APIError> handleTaskAlreadyExistsException(TaskAlreadyExistsException ex) {
         String path = request.getRequestURI();
 
         logger.warn("Tarefa duplicada: {}", ex.getMessage());
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<@NonNull Object> handleMethodArgumentNotValid(
+    protected final @NonNull ResponseEntity<Object> handleMethodArgumentNotValid(
             @NonNull MethodArgumentNotValidException ex,
             @NonNull HttpHeaders headers,
             @NonNull HttpStatusCode status,
@@ -108,14 +108,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<APIError> handleNotReadable(HttpMessageNotReadableException ex) {
+    @Override
+    protected final ResponseEntity<@NonNull Object> handleHttpMessageNotReadable (
+            @NonNull HttpMessageNotReadableException ex,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode status,
+            @NonNull WebRequest webRequest) {
         String path = request.getRequestURI();
         String userMessage = "Corpo da requisição inválido ou ausente";
 
-        // Log do tipo WARN, pois é um erro do cliente, não do servidor
         if (logger.isWarnEnabled()) {
-            // Extrai a causa mais específica para uma mensagem de log útil
             String detail = ex.getMostSpecificCause().getMessage();
             logger.warn("JSON inválido no endpoint [{}]: {}", path, detail);
         }
@@ -128,7 +130,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 path,
                 null
         );
-
 
         return ResponseEntity.badRequest().body(error);
     }
