@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
+@ToString(exclude = {"createdAt", "updatedAt"})
 public class Task {
 
     @Id

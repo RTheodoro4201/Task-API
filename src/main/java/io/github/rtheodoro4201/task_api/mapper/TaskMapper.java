@@ -19,7 +19,7 @@ public class TaskMapper {
         return task;
     }
 
-    public void updateEntity(UpdateTaskDTO dto, Task task) {
+    public Task updateEntity(UpdateTaskDTO dto, Task task) {
         if (dto.title() != null && !dto.title().isBlank()) {
             task.setTitle(dto.title());
         }
@@ -32,6 +32,8 @@ public class TaskMapper {
         if (dto.dueDate() != null) {
             task.setDueDate(dto.dueDate());
         }
+
+        return task;
     }
 
     public TaskResponseDTO toResponse(Task task) {
