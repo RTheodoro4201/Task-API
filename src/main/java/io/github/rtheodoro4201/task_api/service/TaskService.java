@@ -9,13 +9,17 @@ import io.github.rtheodoro4201.task_api.exception.TaskAlreadyExistsException;
 import io.github.rtheodoro4201.task_api.exception.TaskNotFoundException;
 import io.github.rtheodoro4201.task_api.mapper.TaskMapper;
 import io.github.rtheodoro4201.task_api.repository.TaskRepository;
+import io.github.rtheodoro4201.task_api.specification.TaskSpecifications;
 import io.github.rtheodoro4201.task_api.utils.ErrorMessages;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 public class TaskService {
@@ -42,8 +46,13 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TaskResponseDTO> getAllTasks(Pageable pageable) {
-        return taskRepository.findAll(pageable)
+    public Page<TaskResponseDTO> getAllTasks(Pageable pageable, String title, TaskStatus status, LocalDate dueDate) {
+        Specification<Task> taskSpecification = Specification.where(
+                TaskSpecifications.titleContains(title).and(
+                        TaskSpecifications.statusEquals(status).and(
+                                TaskSpecifications.dueDateEquals(dueDate))));
+
+        return taskRepository.findAll(taskSpecification, pageable)
                 .map(taskMapper::toResponse);
     }
 

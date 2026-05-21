@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -26,21 +27,25 @@ public class TaskController {
     }
 
     @PostMapping
-    @SuppressWarnings("java:S5131") // Falso positivo: id é Long gerado pelo banco via @GeneratedValue
-    public ResponseEntity<TaskResponseDTO> createTask(@RequestBody @Valid CreateTaskDTO taskDTO) {
-        TaskResponseDTO createdTaskResponse = taskService.save(taskDTO);
+    @SuppressWarnings("java:S5131")
+    // Falso positivo: resposta JSON com campos textuais sanitizados no TaskMapper.toResponse()
+    public ResponseEntity<TaskResponseDTO> createTask(@RequestBody @Valid CreateTaskDTO createTaskDTO) {
+        TaskResponseDTO createdTaskResponse = taskService.save(createTaskDTO);
 
         URI uri = UriComponentsBuilder
                 .fromPath("/api/v1/tasks/{id}")
                 .buildAndExpand(createdTaskResponse.id())
+                .encode()
                 .toUri();
 
         return ResponseEntity.created(uri).body(createdTaskResponse);
     }
-
     @GetMapping
-    public ResponseEntity<Page<TaskResponseDTO>> getAllTasks(@PageableDefault(size = 10) Pageable pageable) {
-        Page<TaskResponseDTO> taskPageable = taskService.getAllTasks(pageable);
+    public ResponseEntity<Page<TaskResponseDTO>> getAllTasks(@PageableDefault(size = 10) Pageable pageable,
+                                                             @RequestParam(required = false) String title,
+                                                             @RequestParam(required = false) TaskStatus status,
+                                                             @RequestParam(required = false) LocalDate dueDate) {
+        Page<TaskResponseDTO> taskPageable = taskService.getAllTasks(pageable, title, status, dueDate);
         return ResponseEntity.ok(taskPageable);
     }
 
