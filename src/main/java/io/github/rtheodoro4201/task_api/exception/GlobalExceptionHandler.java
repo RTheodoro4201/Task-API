@@ -13,7 +13,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.util.HtmlUtils;
 
 import java.time.Instant;
 import java.util.List;
@@ -29,10 +31,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler (TaskNotFoundException.class)
     public ResponseEntity<APIError> handleTaskNotFoundException(TaskNotFoundException ex) {
-        String path = request.getRequestURI();
+        String path = HtmlUtils.htmlEscape(request.getRequestURI());
 
         logger.warn("Tarefa não encontrada: {}", ex.getMessage());
-
         APIError error = new APIError(
                 Instant.now(),
                 HttpStatus.NOT_FOUND.value(),
@@ -46,10 +47,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler (TaskAlreadyExistsException.class)
     public ResponseEntity<APIError> handleTaskAlreadyExistsException(TaskAlreadyExistsException ex) {
-        String path = request.getRequestURI();
+        String path = HtmlUtils.htmlEscape(request.getRequestURI());
 
         logger.warn("Tarefa duplicada: {}", ex.getMessage());
-
         APIError error = new APIError(
                 Instant.now(),
                 HttpStatus.CONFLICT.value(),
@@ -67,7 +67,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpHeaders headers,
             @NonNull HttpStatusCode status,
             @NonNull WebRequest webRequest) {
-        String path = request.getRequestURI();
+        String path = HtmlUtils.htmlEscape(request.getRequestURI());
 
         if (logger.isDebugEnabled()) {
             logger.debug("Erro de validação na requisição {}: {}", path, ex.getMessage());
@@ -92,10 +92,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIError> handleGeneralException(Exception ex) {
-        String path = request.getRequestURI();
+        String path = HtmlUtils.htmlEscape(request.getRequestURI());
 
         logger.error("Erro interno inesperado no endpoint {}: {}", path, ex.getMessage(), ex);
-
         APIError error = new APIError(
                 Instant.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
@@ -114,9 +113,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             @NonNull HttpHeaders headers,
             @NonNull HttpStatusCode status,
             @NonNull WebRequest webRequest) {
-        String path = request.getRequestURI();
-        String userMessage = "Corpo da requisição inválido ou ausente";
+        String path = HtmlUtils.htmlEscape(request.getRequestURI());
 
+        String userMessage = "Corpo da requisição inválido ou ausente";
         if (logger.isWarnEnabled()) {
             String detail = ex.getMostSpecificCause().getMessage();
             logger.warn("JSON inválido no endpoint [{}]: {}", path, detail);
@@ -132,5 +131,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
 
         return ResponseEntity.badRequest().body(error);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    protected final @NonNull ResponseEntity<Object> handleMethodArgumentTypeMismatchException(@NonNull MethodArgumentTypeMismatchException ex) {
+        String path = HtmlUtils.htmlEscape(request.getRequestURI());
+
+        logger.warn("Valor inválido '{}' para o parâmetro {} no endpoint {} ", ex.getValue(), ex.getName(), path, ex);
+
+        APIError error = new APIError(
+                Instant.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Valor inválido '" + HtmlUtils.htmlEscape(String.valueOf(ex.getValue())) +
+                        "' para o campo '" + HtmlUtils.htmlEscape(ex.getName()) + "'",
+                path,
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }
