@@ -12,7 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 
@@ -26,11 +26,12 @@ public class TaskController {
     }
 
     @PostMapping
+    @SuppressWarnings("java:S5131") // Falso positivo: id é Long gerado pelo banco via @GeneratedValue
     public ResponseEntity<TaskResponseDTO> createTask(@RequestBody @Valid CreateTaskDTO taskDTO) {
         TaskResponseDTO createdTaskResponse = taskService.save(taskDTO);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}")
+        URI uri = UriComponentsBuilder
+                .fromPath("/api/v1/tasks/{id}")
                 .buildAndExpand(createdTaskResponse.id())
                 .toUri();
 
