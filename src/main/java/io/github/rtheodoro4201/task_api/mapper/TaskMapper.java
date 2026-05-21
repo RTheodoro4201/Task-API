@@ -6,6 +6,7 @@ import io.github.rtheodoro4201.task_api.dto.UpdateTaskDTO;
 import io.github.rtheodoro4201.task_api.entity.Task;
 import io.github.rtheodoro4201.task_api.enums.TaskPriority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.HtmlUtils;
 
 @Component
 public class TaskMapper {
@@ -39,13 +40,17 @@ public class TaskMapper {
     public TaskResponseDTO toResponse(Task task) {
         return new TaskResponseDTO(
                 task.getId(),
-                task.getTitle(),
-                task.getDescription(),
+                sanitizeHtml(task.getTitle()),
+                sanitizeHtml(task.getDescription()),
                 task.getStatus(),
                 task.getPriority(),
                 task.getDueDate(),
                 task.getCreatedAt(),
                 task.getUpdatedAt()
         );
+    }
+
+    private String sanitizeHtml(String value) {
+        return value == null ? null : HtmlUtils.htmlEscape(value);
     }
 }
